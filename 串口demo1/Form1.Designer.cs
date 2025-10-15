@@ -107,6 +107,7 @@
             cbb_comList.Name = "cbb_comList";
             cbb_comList.Size = new Size(121, 25);
             cbb_comList.TabIndex = 2;
+            cbb_comList.SelectedValueChanged += cbb_comList_SelectedValueChanged;
             // 
             // rtb_sendTxt
             // 

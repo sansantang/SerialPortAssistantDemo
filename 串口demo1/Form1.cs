@@ -5,7 +5,13 @@ namespace 串口demo1
 {
     public partial class Form1 : Form
     {
-        private List<string> _comList = new List<string>() { "COM1", "COM2", "COM3", "COM4", "COM5" };
+        private List<dynamic> _comList = new List<dynamic>() {
+            new { portName = "COM1", isOpen = false },
+            new { portName = "COM2", isOpen = false },
+            new { portName = "COM3", isOpen = false },
+            new { portName = "COM4", isOpen = false },
+            new { portName = "COM5", isOpen = false }
+        };
 
         private SerialPort _serialPort;
         public Form1()
@@ -29,7 +35,10 @@ namespace 串口demo1
         private void InitCbbPortNames()
         {
             this.cbb_comList.Items.Clear();
-            this.cbb_comList.Items.AddRange(_comList.ToArray()); //添加COM1/2/3/4/5
+            foreach (var item in _comList)
+            {
+                this.cbb_comList.Items.Add(item.portName);
+            }
         }
 
 
@@ -105,9 +114,9 @@ namespace 串口demo1
                 }
                 else
                 {
+                    _serialPort.Close();
                     UpdateComList(_serialPort.PortName);
                     this.btn_openSerialPort.Text = "打开串口";
-                    _serialPort.Close();
                 }
             }
             catch (Exception ex)
@@ -118,30 +127,60 @@ namespace 串口demo1
 
         private void UpdateComList(string portName)
         {
-            int index = _comList.FindIndex(t => t.StartsWith(portName + "-["));
-            string comName = "";
-            // 如果找到已打开的端口标记，则恢复为普通端口名称
+            string comName = string.Empty;
+            // 先查找是否已有带配置信息的端口名（表示该端口曾被打开）
+            int index = _comList.FindIndex(t => t.portName.StartsWith(portName + "-["));
+
             if (index != -1)
             {
-                comName = portName;
-                _comList[index] = portName;
+                // 当前是打开状态，要关闭，需恢复为纯端口名
+                if (!_serialPort.IsOpen && _comList[index].isOpen)
+                {
+                    _comList[index] = new { portName = portName, isOpen = false };
+                    comName = portName;
+                }
             }
             else
             {
-                // 查找普通端口名称的位置
-                index = _comList.FindIndex(t => t == portName);
+                // 查找原始端口名
+                index = _comList.FindIndex(t => t.portName == portName);
                 if (index != -1)
                 {
-                    // 添加端口配置信息标记
-                    string configInfo = $"-[{_serialPort.BaudRate}-{_serialPort.Parity}-{_serialPort.DataBits}-{_serialPort.StopBits}]";
-                    comName = portName + configInfo;
-                    _comList[index] = comName;
+                    // 当前是关闭状态，要打开，需加上配置信息
+                    if (_serialPort.IsOpen && !_comList[index].isOpen)
+                    {
+                        string configInfo = $"-[{_serialPort.BaudRate}-{_serialPort.Parity}-{_serialPort.DataBits}-{_serialPort.StopBits}]";
+                        comName = portName + configInfo;
+                        _comList[index] = new { portName = comName, isOpen = true };
+                    }
                 }
             }
 
-            // 重新初始化下拉列表并设置选中项
+            // 重新加载下拉框
             InitCbbPortNames();
             this.cbb_comList.SelectedItem = comName;
+        }
+
+        /// <summary>
+        /// 串口 COM 的端口变化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbb_comList_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (this.cbb_comList.SelectedItem is null)
+            {
+                return;
+            }
+            int index = _comList.FindIndex(t => t.portName.StartsWith(this.cbb_comList.SelectedItem.ToString()));
+            if (_comList[index].isOpen)
+            {
+                this.btn_openSerialPort.Text = "关闭串口";
+            }
+            else
+            {
+                this.btn_openSerialPort.Text = "打开串口";
+            }
         }
         #endregion
 
@@ -150,8 +189,6 @@ namespace 串口demo1
         {
 
         }
-
-
         #endregion
 
 
