@@ -31,8 +31,8 @@
             label1 = new Label();
             label2 = new Label();
             cbb_comList = new ComboBox();
-            rtb_sendTxt = new RichTextBox();
             rtb_receiveTxt = new RichTextBox();
+            rtb_sendTxt = new RichTextBox();
             btn_openSerialPort = new Button();
             groupBox1 = new GroupBox();
             chb_DTR = new CheckBox();
@@ -109,25 +109,25 @@
             cbb_comList.TabIndex = 2;
             cbb_comList.SelectedValueChanged += cbb_comList_SelectedValueChanged;
             // 
-            // rtb_sendTxt
-            // 
-            rtb_sendTxt.BackColor = SystemColors.ButtonFace;
-            rtb_sendTxt.Dock = DockStyle.Fill;
-            rtb_sendTxt.Location = new Point(3, 19);
-            rtb_sendTxt.Name = "rtb_sendTxt";
-            rtb_sendTxt.ReadOnly = true;
-            rtb_sendTxt.Size = new Size(510, 339);
-            rtb_sendTxt.TabIndex = 3;
-            rtb_sendTxt.Text = "";
-            // 
             // rtb_receiveTxt
             // 
+            rtb_receiveTxt.BackColor = SystemColors.ButtonFace;
             rtb_receiveTxt.Dock = DockStyle.Fill;
             rtb_receiveTxt.Location = new Point(3, 19);
             rtb_receiveTxt.Name = "rtb_receiveTxt";
-            rtb_receiveTxt.Size = new Size(510, 200);
-            rtb_receiveTxt.TabIndex = 4;
+            rtb_receiveTxt.ReadOnly = true;
+            rtb_receiveTxt.Size = new Size(510, 339);
+            rtb_receiveTxt.TabIndex = 3;
             rtb_receiveTxt.Text = "";
+            // 
+            // rtb_sendTxt
+            // 
+            rtb_sendTxt.Dock = DockStyle.Fill;
+            rtb_sendTxt.Location = new Point(3, 19);
+            rtb_sendTxt.Name = "rtb_sendTxt";
+            rtb_sendTxt.Size = new Size(510, 200);
+            rtb_sendTxt.TabIndex = 4;
+            rtb_sendTxt.Text = "";
             // 
             // btn_openSerialPort
             // 
@@ -303,6 +303,7 @@
             btn_receiveConfig_handClear.TabIndex = 18;
             btn_receiveConfig_handClear.Text = "手动清空";
             btn_receiveConfig_handClear.UseVisualStyleBackColor = true;
+            btn_receiveConfig_handClear.Click += btn_receiveConfig_handClear_Click;
             // 
             // btn_receiveConfig_saveData
             // 
@@ -331,6 +332,7 @@
             chb_receiveConfig_hexadecimal.TabIndex = 16;
             chb_receiveConfig_hexadecimal.Text = "十六进制";
             chb_receiveConfig_hexadecimal.UseVisualStyleBackColor = true;
+            chb_receiveConfig_hexadecimal.CheckedChanged += chb_receiveConfig_hexadecimal_CheckedChanged;
             // 
             // chb_receiveConfig_autoClear
             // 
@@ -401,6 +403,7 @@
             btn_sendConfig_handSend.TabIndex = 25;
             btn_sendConfig_handSend.Text = "手动发送";
             btn_sendConfig_handSend.UseVisualStyleBackColor = true;
+            btn_sendConfig_handSend.Click += btn_sendConfig_handSend_Click;
             // 
             // chb__sendConfig_autoSend
             // 
@@ -442,7 +445,7 @@
             // 
             // groupBox4
             // 
-            groupBox4.Controls.Add(rtb_receiveTxt);
+            groupBox4.Controls.Add(rtb_sendTxt);
             groupBox4.Location = new Point(300, 388);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new Size(516, 222);
@@ -452,7 +455,7 @@
             // 
             // groupBox5
             // 
-            groupBox5.Controls.Add(rtb_sendTxt);
+            groupBox5.Controls.Add(rtb_receiveTxt);
             groupBox5.Location = new Point(300, 21);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(516, 361);
@@ -549,8 +552,8 @@
         private Label label1;
         private Label label2;
         private ComboBox cbb_comList;
-        private RichTextBox rtb_sendTxt;
         private RichTextBox rtb_receiveTxt;
+        private RichTextBox rtb_sendTxt;
         private Button btn_openSerialPort;
         private GroupBox groupBox1;
         private GroupBox groupBox2;

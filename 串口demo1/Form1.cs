@@ -1,6 +1,8 @@
 using Microsoft.Win32;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Net;
+using System.Text;
 
 namespace 串口demo1
 {
@@ -17,15 +19,19 @@ namespace 串口demo1
             //new { portName = "COM1", isOpen = false },
             //new { portName = "COM2", isOpen = false },
             //new { portName = "COM3", isOpen = false },
-            //new { portName = "COM4", isOpen = false },
-            //new { portName = "COM5", isOpen = false }
         };
 
         private SerialPort _serialPort;
+
+        private List<byte> receiveBuffer = new List<byte>();
+
+        private int receiveCount = 0;
         public Form1()
         {
             InitializeComponent();
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitForm();
+            Control.CheckForIllegalCrossThreadCalls = false;
 
         }
         private void InitForm()
@@ -38,7 +44,7 @@ namespace 串口demo1
             this.cbb_stopBit.SelectedItem = "1";
 
             InitCbbPortNames();
-            this.cbb_comList.SelectedIndex = 0;
+            this.cbb_comList.SelectedIndex = 2;
 
         }
 
@@ -95,13 +101,16 @@ namespace 串口demo1
                     break;
 
             }
+            _serialPort.DataReceived += _serialPort_DataReceived;
+
+
         }
 
 
         #region 串口配置
 
         /// <summary>
-        /// 获取设备的串口
+        /// 串口配置 - 获取设备的串口
         /// </summary>
         private void SerialLoad()
         {
@@ -124,7 +133,7 @@ namespace 串口demo1
 
 
         /// <summary>
-        /// 虚拟端口载入列表
+        /// 串口配置 - 虚拟端口载入列表
         /// </summary>
         private void InitCbbPortNames()
         {
@@ -135,6 +144,12 @@ namespace 串口demo1
             }
         }
 
+
+        /// <summary>
+        /// 串口配置 - 打开串口
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_openSerialPort_Click(object sender, EventArgs e)
         {
             try
@@ -145,7 +160,6 @@ namespace 串口demo1
                     _serialPort.Open();
                     this.btn_openSerialPort.Text = "关闭串口";
                     UpdateComList(_serialPort.PortName);
-                    //this.cbb_comList.SelectedText = _serialPort.PortName + $"-[{_serialPort.BaudRate}-{_serialPort.Parity}-{_serialPort.DataBits}-{_serialPort.StopBits}]";
                     Console.WriteLine(_serialPort);
                 }
                 else
@@ -161,6 +175,10 @@ namespace 串口demo1
             }
         }
 
+        /// <summary>
+        /// 串口配置 - 更新串口号
+        /// </summary>
+        /// <param name="portName"></param>
         private void UpdateComList(string portName)
         {
             string comName = string.Empty;
@@ -198,7 +216,7 @@ namespace 串口demo1
         }
 
         /// <summary>
-        /// 串口 COM 的端口变化
+        /// 串口配置 - 串口 COM 的端口变化
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -220,6 +238,52 @@ namespace 串口demo1
         }
         #endregion
 
+
+        #region 接收配置
+        /// <summary>
+        /// 接收配置 - 清空接收区
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_receiveConfig_handClear_Click(object sender, EventArgs e)
+        {
+            this.receiveBuffer.Clear();
+            this.rtb_receiveTxt.Text = string.Empty;
+        }
+
+        /// <summary>
+        /// 接收配置 - 切换16进制
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chb_receiveConfig_hexadecimal_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.chb_receiveConfig_hexadecimal.Checked)
+            {
+                this.rtb_receiveTxt.Text = BitConverter.ToString(receiveBuffer.ToArray()).Replace("-", " ");
+            }
+            else
+            {
+                this.rtb_receiveTxt.Text = Encoding.GetEncoding("gb2312").GetString(receiveBuffer.ToArray()).Replace("\0", "\\0");
+            }
+        }
+
+        #endregion
+
+
+
+        #region 发送消息
+        /// <summary>
+        /// 手动发送
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_sendConfig_handSend_Click(object sender, EventArgs e)
+        {
+            this._serialPort.Write(this.rtb_receiveTxt.Text);
+        }
+        #endregion
+
         #region 状态栏
         private void tsslab_btnClearCount_Click(object sender, EventArgs e)
         {
@@ -228,5 +292,43 @@ namespace 串口demo1
         #endregion
 
 
+        private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                byte[] dataTemp = new byte[_serialPort.BytesToRead];
+
+                _serialPort.Read(dataTemp, 0, dataTemp.Length);
+
+                receiveBuffer.AddRange(dataTemp);
+
+                receiveCount += dataTemp.Length;
+
+                this.Invoke(new Action(() =>
+                {
+                    string str = string.Empty;
+
+                    if (this.chb_receiveConfig_hexadecimal.Checked)
+                    {
+                        // 转换为十六进制字符串显示，结果示例："00-01"
+                        string hexDisplay = BitConverter.ToString(dataTemp);
+                        str = hexDisplay.Replace("-", " ");
+                    }
+                    else
+                    {
+                        //直接获取文本
+                        str = Encoding.GetEncoding("gb2312").GetString(dataTemp);
+                        str = str.Replace("\0", "\\0"); //处理0
+                    }
+
+                    this.rtb_receiveTxt.AppendText(str);
+                }));
+            }
+            catch (Exception ex)
+            {
+                // 异常处理
+                Console.WriteLine("Error in _serialPort_DataReceived: " + ex.Message);
+            }
+        }
     }
 }
