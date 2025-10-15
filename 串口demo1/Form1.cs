@@ -32,7 +32,7 @@ namespace 串口demo1
             this.cbb_comList.Items.AddRange(_comList.ToArray()); //添加COM1/2/3/4/5
         }
 
-        
+
         private void initSerialPort()
         {
             _serialPort = new SerialPort();
@@ -118,28 +118,30 @@ namespace 串口demo1
 
         private void UpdateComList(string portName)
         {
-            string COMName = "";
-            int openIndex = _comList.FindIndex(t => t.StartsWith(portName+"-["));
-            if (openIndex != -1)
-            {
-                COMName = portName;
-                _comList[openIndex] = portName;
-                InitCbbPortNames();
-                this.cbb_comList.SelectedItem = COMName;
-                return;
-            }
-
-            int index = _comList.FindIndex(t => t == portName);
+            int index = _comList.FindIndex(t => t.StartsWith(portName + "-["));
+            string comName = "";
+            // 如果找到已打开的端口标记，则恢复为普通端口名称
             if (index != -1)
             {
-                COMName = _serialPort.PortName + $"-[{_serialPort.BaudRate}-{_serialPort.Parity}-{_serialPort.DataBits}-{_serialPort.StopBits}]";
-                // 通过索引修改集合中的元素
-                _comList[index] = COMName;
-                InitCbbPortNames();
-                this.cbb_comList.SelectedItem = COMName;
+                comName = portName;
+                _comList[index] = portName;
+            }
+            else
+            {
+                // 查找普通端口名称的位置
+                index = _comList.FindIndex(t => t == portName);
+                if (index != -1)
+                {
+                    // 添加端口配置信息标记
+                    string configInfo = $"-[{_serialPort.BaudRate}-{_serialPort.Parity}-{_serialPort.DataBits}-{_serialPort.StopBits}]";
+                    comName = portName + configInfo;
+                    _comList[index] = comName;
+                }
             }
 
-            
+            // 重新初始化下拉列表并设置选中项
+            InitCbbPortNames();
+            this.cbb_comList.SelectedItem = comName;
         }
         #endregion
 
