@@ -128,6 +128,7 @@
             rtb_sendTxt.Size = new Size(510, 200);
             rtb_sendTxt.TabIndex = 4;
             rtb_sendTxt.Text = "";
+            rtb_sendTxt.Leave += rtb_sendTxt_Leave;
             // 
             // btn_openSerialPort
             // 
@@ -394,6 +395,7 @@
             btn_sendConfig_clearSend.TabIndex = 26;
             btn_sendConfig_clearSend.Text = "清空发送";
             btn_sendConfig_clearSend.UseVisualStyleBackColor = true;
+            btn_sendConfig_clearSend.Click += btn_sendConfig_clearSend_Click;
             // 
             // btn_sendConfig_handSend
             // 
@@ -433,6 +435,7 @@
             chb_sendConfig_hexidecimal.TabIndex = 23;
             chb_sendConfig_hexidecimal.Text = "十六进制";
             chb_sendConfig_hexidecimal.UseVisualStyleBackColor = true;
+            chb_sendConfig_hexidecimal.CheckedChanged += chb_sendConfig_hexidecimal_CheckedChanged;
             // 
             // btn_sendConfig_openFile
             // 

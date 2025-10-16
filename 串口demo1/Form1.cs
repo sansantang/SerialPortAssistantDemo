@@ -1,6 +1,7 @@
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO.Ports;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -24,8 +25,10 @@ namespace 串口demo1
         private SerialPort _serialPort;
 
         private List<byte> receiveBuffer = new List<byte>();
+        private List<byte> sendBuffer = new List<byte>();
 
-        private int receiveCount = 0;
+        private long sendCount = 0;
+        private long receiveCount = 0;
         public Form1()
         {
             InitializeComponent();
@@ -270,9 +273,51 @@ namespace 串口demo1
 
         #endregion
 
+        #region 发送配置
+        /// <summary>
+        /// 发送配置 - 切换16进制
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chb_sendConfig_hexidecimal_CheckedChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(rtb_sendTxt.Text)) return;
+
+            if (chb_sendConfig_hexidecimal.Checked)
+            {
+                this.rtb_sendTxt.Text = HexHelper.BytesToHexString(sendBuffer.ToArray());
+            }
+            else
+            {
+                this.rtb_sendTxt.Text = Encoding.GetEncoding("GB2312").GetString(sendBuffer.ToArray()).Replace("\0", "\\0");
+            }
+        }
+
+        /// <summary>
+        /// 发送配置 - 清空发送
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        private void btn_sendConfig_clearSend_Click(object sender, EventArgs e)
+        {
+            this.sendBuffer.Clear();
+            this.rtb_sendTxt.Text = string.Empty;
+            sendCount = 0;
+            this.tsslab_sendCount.Text = sendCount.ToString();
+        }
+        #endregion 
 
 
         #region 发送消息
+
+        private void SendMessage()
+        {
+            _serialPort.Write(sendBuffer.ToArray(), 0, sendBuffer.Count);
+            sendCount += sendBuffer.Count;
+            this.tsslab_sendCount.Text = sendCount.ToString();
+        }
+
         /// <summary>
         /// 手动发送
         /// </summary>
@@ -280,18 +325,28 @@ namespace 串口demo1
         /// <param name="e"></param>
         private void btn_sendConfig_handSend_Click(object sender, EventArgs e)
         {
-            this._serialPort.Write(this.rtb_receiveTxt.Text);
+            SendMessage();
         }
         #endregion
 
         #region 状态栏
         private void tsslab_btnClearCount_Click(object sender, EventArgs e)
         {
-
+            this.receiveBuffer = new List<byte>();
+            this.sendBuffer = new List<byte>();
+            this.tsslab_receiveCount.Text = "0";
+            this.tsslab_sendCount.Text = "0";
+            this.rtb_receiveTxt.Text = "";
+            this.rtb_sendTxt.Text = "";
         }
         #endregion
 
-
+        #region 接受区
+        /// <summary>
+        /// 接收数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
@@ -303,6 +358,8 @@ namespace 串口demo1
                 receiveBuffer.AddRange(dataTemp);
 
                 receiveCount += dataTemp.Length;
+
+                this.tsslab_receiveCount.Text = receiveCount.ToString();
 
                 this.Invoke(new Action(() =>
                 {
@@ -330,5 +387,35 @@ namespace 串口demo1
                 Console.WriteLine("Error in _serialPort_DataReceived: " + ex.Message);
             }
         }
+        #endregion
+
+        #region 发送区
+        /// <summary>
+        /// 发送区检查
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void rtb_sendTxt_Leave(object sender, EventArgs e)
+        {
+            if (chb_sendConfig_hexidecimal.Checked)
+            {
+                if (HexHelper.IsValidHexString(this.rtb_sendTxt.Text.Replace(" ", "")))
+                {
+                    sendBuffer.Clear();
+                    sendBuffer.AddRange(Encoding.GetEncoding("GB2312").GetBytes(rtb_sendTxt.Text).ToList());
+                }
+                else
+                {
+                    MessageBox.Show("请输入正确的16进制");
+                    sendBuffer.Clear();
+                }
+            }
+            else
+            {
+                sendBuffer.Clear();
+                sendBuffer.AddRange(Encoding.GetEncoding("GB2312").GetBytes(rtb_sendTxt.Text).ToList());
+            }
+        }
+        #endregion
     }
 }
