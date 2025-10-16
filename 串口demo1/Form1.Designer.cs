@@ -74,12 +74,27 @@
             toolStripStatusLabel5 = new ToolStripStatusLabel();
             tsslab_receiveCount = new ToolStripStatusLabel();
             tsslab_btnClearCount = new ToolStripStatusLabel();
+            groupBox6 = new GroupBox();
+            label15 = new Label();
+            label14 = new Label();
+            chb_parsing_start = new CheckBox();
+            label13 = new Label();
+            txt_Parsing_dataAll = new TextBox();
+            txt_Parsing_data4 = new TextBox();
+            label12 = new Label();
+            txt_Parsing_data3 = new TextBox();
+            label11 = new Label();
+            txt_Parsing_data2 = new TextBox();
+            label10 = new Label();
+            txt_Parsing_data1 = new TextBox();
+            label9 = new Label();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
             groupBox5.SuspendLayout();
             statusStrip1.SuspendLayout();
+            groupBox6.SuspendLayout();
             SuspendLayout();
             // 
             // label1
@@ -471,7 +486,7 @@
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, tsslab_status, toolStripStatusLabel3, tsslab_sendCount, toolStripStatusLabel5, tsslab_receiveCount, tsslab_btnClearCount });
             statusStrip1.Location = new Point(0, 617);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(826, 22);
+            statusStrip1.Size = new Size(1063, 22);
             statusStrip1.TabIndex = 9;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -521,11 +536,145 @@
             tsslab_btnClearCount.Text = "清空计数";
             tsslab_btnClearCount.Click += tsslab_btnClearCount_Click;
             // 
+            // groupBox6
+            // 
+            groupBox6.Controls.Add(label15);
+            groupBox6.Controls.Add(label14);
+            groupBox6.Controls.Add(chb_parsing_start);
+            groupBox6.Controls.Add(label13);
+            groupBox6.Controls.Add(txt_Parsing_dataAll);
+            groupBox6.Controls.Add(txt_Parsing_data4);
+            groupBox6.Controls.Add(label12);
+            groupBox6.Controls.Add(txt_Parsing_data3);
+            groupBox6.Controls.Add(label11);
+            groupBox6.Controls.Add(txt_Parsing_data2);
+            groupBox6.Controls.Add(label10);
+            groupBox6.Controls.Add(txt_Parsing_data1);
+            groupBox6.Controls.Add(label9);
+            groupBox6.Location = new Point(822, 21);
+            groupBox6.Name = "groupBox6";
+            groupBox6.Size = new Size(229, 348);
+            groupBox6.TabIndex = 10;
+            groupBox6.TabStop = false;
+            groupBox6.Text = "指令解析";
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold);
+            label15.Location = new Point(19, 288);
+            label15.Name = "label15";
+            label15.Size = new Size(138, 17);
+            label15.TabIndex = 12;
+            label15.Text = "例：7f043132334DE10";
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold);
+            label14.Location = new Point(19, 253);
+            label14.Name = "label14";
+            label14.Size = new Size(157, 17);
+            label14.TabIndex = 11;
+            label14.Text = "格式：7F+长度+数据+CRC";
+            // 
+            // chb_parsing_start
+            // 
+            chb_parsing_start.AutoSize = true;
+            chb_parsing_start.Location = new Point(29, 216);
+            chb_parsing_start.Name = "chb_parsing_start";
+            chb_parsing_start.Size = new Size(111, 21);
+            chb_parsing_start.TabIndex = 10;
+            chb_parsing_start.Text = "启动数据帧接收";
+            chb_parsing_start.UseVisualStyleBackColor = true;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(27, 140);
+            label13.Name = "label13";
+            label13.Size = new Size(44, 17);
+            label13.TabIndex = 9;
+            label13.Text = "数据帧";
+            // 
+            // txt_Parsing_dataAll
+            // 
+            txt_Parsing_dataAll.Location = new Point(27, 166);
+            txt_Parsing_dataAll.Multiline = true;
+            txt_Parsing_dataAll.Name = "txt_Parsing_dataAll";
+            txt_Parsing_dataAll.Size = new Size(164, 39);
+            txt_Parsing_dataAll.TabIndex = 8;
+            // 
+            // txt_Parsing_data4
+            // 
+            txt_Parsing_data4.Location = new Point(91, 112);
+            txt_Parsing_data4.Name = "txt_Parsing_data4";
+            txt_Parsing_data4.Size = new Size(100, 23);
+            txt_Parsing_data4.TabIndex = 7;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(27, 115);
+            label12.Name = "label12";
+            label12.Size = new Size(39, 17);
+            label12.TabIndex = 6;
+            label12.Text = "数据4";
+            // 
+            // txt_Parsing_data3
+            // 
+            txt_Parsing_data3.Location = new Point(91, 80);
+            txt_Parsing_data3.Name = "txt_Parsing_data3";
+            txt_Parsing_data3.Size = new Size(100, 23);
+            txt_Parsing_data3.TabIndex = 5;
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new Point(27, 82);
+            label11.Name = "label11";
+            label11.Size = new Size(39, 17);
+            label11.TabIndex = 4;
+            label11.Text = "数据3";
+            // 
+            // txt_Parsing_data2
+            // 
+            txt_Parsing_data2.Location = new Point(91, 49);
+            txt_Parsing_data2.Name = "txt_Parsing_data2";
+            txt_Parsing_data2.Size = new Size(100, 23);
+            txt_Parsing_data2.TabIndex = 3;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new Point(27, 51);
+            label10.Name = "label10";
+            label10.Size = new Size(39, 17);
+            label10.TabIndex = 2;
+            label10.Text = "数据2";
+            // 
+            // txt_Parsing_data1
+            // 
+            txt_Parsing_data1.Location = new Point(91, 19);
+            txt_Parsing_data1.Name = "txt_Parsing_data1";
+            txt_Parsing_data1.Size = new Size(100, 23);
+            txt_Parsing_data1.TabIndex = 1;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(27, 22);
+            label9.Name = "label9";
+            label9.Size = new Size(39, 17);
+            label9.TabIndex = 0;
+            label9.Text = "数据1";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(826, 639);
+            ClientSize = new Size(1063, 639);
+            Controls.Add(groupBox6);
             Controls.Add(groupBox5);
             Controls.Add(groupBox4);
             Controls.Add(groupBox3);
@@ -546,6 +695,8 @@
             groupBox5.ResumeLayout(false);
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
+            groupBox6.ResumeLayout(false);
+            groupBox6.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -598,5 +749,19 @@
         private ToolStripStatusLabel toolStripStatusLabel5;
         private ToolStripStatusLabel tsslab_receiveCount;
         private ToolStripStatusLabel tsslab_btnClearCount;
+        private GroupBox groupBox6;
+        private Label label9;
+        private TextBox txt_Parsing_data4;
+        private Label label12;
+        private TextBox txt_Parsing_data3;
+        private Label label11;
+        private TextBox txt_Parsing_data2;
+        private Label label10;
+        private TextBox txt_Parsing_data1;
+        private Label label13;
+        private TextBox txt_Parsing_dataAll;
+        private CheckBox chb_parsing_start;
+        private Label label14;
+        private Label label15;
     }
 }

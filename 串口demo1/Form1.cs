@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.Xml;
 using System.Text;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace 串口demo1
 {
@@ -29,13 +31,14 @@ namespace 串口demo1
 
         private long sendCount = 0;
         private long receiveCount = 0;
+
+        private Queue<byte> bufferQueue = null;
+
         public Form1()
         {
             InitializeComponent();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitForm();
-            Control.CheckForIllegalCrossThreadCalls = false;
-
         }
         private void InitForm()
         {
@@ -48,6 +51,8 @@ namespace 串口demo1
 
             InitCbbPortNames();
             this.cbb_comList.SelectedIndex = 2;
+
+            bufferQueue = new Queue<byte>(); //初始化
 
         }
 
@@ -361,25 +366,45 @@ namespace 串口demo1
 
                 this.tsslab_receiveCount.Text = receiveCount.ToString();
 
-                this.Invoke(new Action(() =>
+                if (!chb_parsing_start.Checked)
                 {
-                    string str = string.Empty;
-
-                    if (this.chb_receiveConfig_hexadecimal.Checked)
+                    this.Invoke(new Action(() =>
                     {
-                        // 转换为十六进制字符串显示，结果示例："00-01"
-                        string hexDisplay = BitConverter.ToString(dataTemp);
-                        str = hexDisplay.Replace("-", " ");
-                    }
-                    else
-                    {
-                        //直接获取文本
-                        str = Encoding.GetEncoding("gb2312").GetString(dataTemp);
-                        str = str.Replace("\0", "\\0"); //处理0
-                    }
+                        string str = string.Empty;
 
-                    this.rtb_receiveTxt.AppendText(str);
-                }));
+                        if (this.chb_receiveConfig_hexadecimal.Checked)
+                        {
+                            // 转换为十六进制字符串显示，结果示例："00-01"
+                            string hexDisplay = BitConverter.ToString(dataTemp);
+                            str = hexDisplay.Replace("-", " ");
+                        }
+                        else
+                        {
+                            //直接获取文本
+                            str = Encoding.GetEncoding("gb2312").GetString(dataTemp);
+                            str = str.Replace("\0", "\\0"); //处理0
+                        }
+
+                        this.rtb_receiveTxt.AppendText(str);
+                    }));
+                }
+                else
+                {
+
+                    byte[] frameBuffer = ParsingHelper.ParsingData(dataTemp, bufferQueue, new byte[] { 0x7f });
+
+                    if (frameBuffer.Length > 0)
+                    {
+                        this.Invoke(new Action(() =>
+                        {
+                            this.txt_Parsing_dataAll.Text = HexHelper.BytesToHexString(frameBuffer);
+                            this.txt_Parsing_data1.Text = String.Format("{0:X2}", frameBuffer[2]);
+                            this.txt_Parsing_data2.Text = String.Format("{0:X2}", frameBuffer[3]);
+                            this.txt_Parsing_data3.Text = String.Format("{0:X2}", frameBuffer[4]);
+                            this.txt_Parsing_data4.Text = String.Format("{0:X2}", frameBuffer[5]);
+                        }));
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -387,6 +412,8 @@ namespace 串口demo1
                 Console.WriteLine("Error in _serialPort_DataReceived: " + ex.Message);
             }
         }
+
+
         #endregion
 
         #region 发送区
